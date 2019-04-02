@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="ffmpgetUtils" />
+        <module name="publicnetty" />
+        <module name="publicUtils" />
+        <module name="transpondstreamserver" />
+        <module name="udpstreamserver" />
+        <module name="uploadvideoserver" />
+        <module name="websocketchatserver" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="uploadvideoserver" target="8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
