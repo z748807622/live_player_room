@@ -43,7 +43,10 @@ public class WebSocketHandler extends ChannelInboundHandlerAdapter {
             if(handshaker == null){
                 webSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
             }else {
-                handshaker.handshake(ctx.channel(),request);
+                DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
+                response.headers().set("Sec-WebSocket-Protocol",request.headers().get("Sec-WebSocket-Protocol"));
+                handshaker.handshake(ctx.channel(), request,response.headers(),ctx.channel().newPromise());
+                //handshaker.handshake(ctx.channel(),request);
                 ChannelHandlerPool.CHANNELGROUP.getChannelGroup().add(ctx.channel());
             }
         }else if(msg instanceof WebSocketFrame) {
