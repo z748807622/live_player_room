@@ -1,7 +1,7 @@
 package com.zjy.handler;
 
 import com.zjy.entity.UserInfo;
-import com.zjy.proto.ChatProto;
+import com.zjy.proto.*;
 import com.zjy.util.NettyUtil;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;

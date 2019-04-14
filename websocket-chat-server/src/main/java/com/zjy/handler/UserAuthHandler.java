@@ -1,8 +1,10 @@
 package com.zjy.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zjy.JwtUtil.JwtUtils;
 import com.zjy.entity.UserInfo;
 import com.zjy.proto.ChatCode;
+import com.zjy.redisUtil.RedisShardedPoolUtil;
 import com.zjy.util.Constants;
 import com.zjy.util.NettyUtil;
 import io.netty.channel.Channel;
@@ -12,8 +14,12 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @description 处理请求认证和分发消息
@@ -104,7 +110,39 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
                 logger.info("receive pong message, address: {}",NettyUtil.parseChannelRemoteAddr(channel));
                 return;
             case ChatCode.AUTH_CODE:
-                boolean isSuccess = UserInfoManager.saveUser(channel, json.getString("nick"));
+                String token = json.getString("token");
+                JSONObject redisInfo = null;
+                try {
+                    redisInfo = JSONObject.parseObject(RedisShardedPoolUtil.get(token));//和redis里面的信息比对
+                }catch (Exception e){
+                    UserInfoManager.sendInfo(channel,ChatCode.SYS_AUTH_STATE,false);
+                    return;
+                }
+                System.out.println(token);
+                if (StringUtils.isBlank(token) || redisInfo == null){
+                    UserInfoManager.sendInfo(channel,ChatCode.SYS_AUTH_STATE,false);
+                    return;
+                }
+                //验证登陆
+                Map<String, Object> infoMap = null;
+                try {
+                    infoMap = JwtUtils.parserJavaWebToken(token);
+                }catch (Exception e){
+                    UserInfoManager.sendInfo(channel,ChatCode.SYS_AUTH_STATE,false);
+                    return;
+                }
+                if (infoMap == null
+                        || !infoMap.containsKey("nickName")
+                        || !infoMap.containsKey("loginName")
+                        || infoMap.get("nickName") == null
+                        || !StringUtils.equals((String)infoMap.get("nickName"),redisInfo.getString("nickName"))
+                ){
+                    UserInfoManager.sendInfo(channel,ChatCode.SYS_AUTH_STATE,false);
+                    return;
+                }
+                String nickName = (String) infoMap.get("nickName");
+
+                boolean isSuccess = UserInfoManager.saveUser(channel, nickName);
                 UserInfoManager.sendInfo(channel,ChatCode.SYS_AUTH_STATE,isSuccess);
                 if (isSuccess) {
                     UserInfoManager.broadCastInfo(ChatCode.SYS_USER_COUNT,UserInfoManager.getAuthUserCount());

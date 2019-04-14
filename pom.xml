@@ -55,7 +55,7 @@
         <module>transpond-stream-server</module>
         <module>udp-stream-server</module>
         <module>websocket-chat-server</module>
-        <!--<module>web-server</module>-->
+        <module>web-server</module>
         <module>public-netty</module>
         <module>upload-video-server</module>
     </modules>

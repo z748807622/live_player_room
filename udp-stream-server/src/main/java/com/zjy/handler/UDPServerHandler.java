@@ -28,7 +28,7 @@ public class UDPServerHandler extends SimpleChannelInboundHandler<DatagramPacket
             DatagramPacket datagramPacket = (DatagramPacket) msg;
             ByteBuf bb = Unpooled.copiedBuffer(datagramPacket.content());
             //TODO 向websocket转发bb
-            System.out.println("----");
+            //System.out.println("----");
             UDPStreamServer.getTransponStreamServerChannelGroup().writeAndFlush(new BinaryWebSocketFrame(bb));
         }
     }

@@ -41,7 +41,8 @@ public class RedisShardedPool {
         jedisShardInfoList.add(info1);
         jedisShardInfoList.add(info2);
         //创建连接池，指定分配算法
-        pool = new ShardedJedisPool(config,jedisShardInfoList, Hashing.MURMUR_HASH, Sharded.DEFAULT_KEY_TAG_PATTERN);
+        //, Hashing.MURMUR_HASH, Sharded.DEFAULT_KEY_TAG_PATTERN
+        pool = new ShardedJedisPool(config,jedisShardInfoList);
     }
 
     static{

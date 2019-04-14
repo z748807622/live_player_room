@@ -11,6 +11,7 @@ public abstract class CallFFmpgeTools extends CallCmdClass {
     //ffmpeg  -re -i D:/video/有头脑的祖先.mp4 -vcodec libx264 -f mpegts -codec:v mpeg1video udp://127.0.0.1:2222
     private String ffmpge = "ffmpeg {loop} -re -i {file} -vcodec libx264 -f mpegts -codec:v mpeg1video udp://127.0.0.1:8888";
 
+    // ffmpeg -re -i .\123.mp4 -vcodec libx264 -f mpegts -codec:v mpeg1video udp://127.0.0.1:2222
     /**
      * 设置播放文件名和是否循环播放
      * @param fileName
