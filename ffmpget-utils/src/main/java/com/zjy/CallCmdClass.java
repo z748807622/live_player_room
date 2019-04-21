@@ -6,10 +6,15 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class CallCmdClass  {
 
-    public Process p;
+    private static List<Process> pList = new ArrayList<>();
+    private Object pLock = new Object();
+
+    public static Process p;
     public static Logger logger = LoggerFactory.getLogger(CallCmdClass.class);
 
     /**
@@ -28,7 +33,8 @@ public abstract class CallCmdClass  {
      * 关闭cmd
      */
     public boolean close(){
-        if(p != null){
+        while (p == null);
+        while (p != null){
             try {
                 p.destroy();
                 return true;
@@ -44,7 +50,7 @@ public abstract class CallCmdClass  {
      * 调用cmd命令
      * @param cmd
      */
-    public void callCmd(String cmd){
+    public boolean callCmd(String cmd){
         try {
             //Process p = Runtime.getRuntime().exec("ping 172.247.34.70");
             //String cmd = "ffmpeg -stream_loop -1 -re -i D:/video/哈利波特第8部哈利波特与死亡圣器(下).mp4 -f mpegts -codec:v mpeg1video -s 864*486 udp://127.0.0.1:4444";
@@ -52,6 +58,9 @@ public abstract class CallCmdClass  {
             //String cmd3 = "ping 172.247.34.70";
             logger.info("执行：{}",cmd);
             p = Runtime.getRuntime().exec(cmd);
+            synchronized (pLock){
+                pList.add(p);
+            }
             logger.info("开始.. : {}",cmd);
 
             new Thread(()->{
@@ -86,6 +95,7 @@ public abstract class CallCmdClass  {
                 }
             }).start();
             p.waitFor();
+            Thread.sleep(1000);
             p.destroy();
             logger.info("停止:{}",cmd);
         }catch (Exception e){
@@ -94,6 +104,8 @@ public abstract class CallCmdClass  {
             if(p != null){
                 p.destroy();
             }
+            return false;
         }
+        return true;
     }
 }

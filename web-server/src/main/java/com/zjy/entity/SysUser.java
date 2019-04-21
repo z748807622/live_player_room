@@ -1,5 +1,6 @@
 package com.zjy.entity;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -7,6 +8,7 @@ import javax.persistence.Table;
 public class SysUser {
 
     @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer userId;
     private String nickName;
     private String loginName;

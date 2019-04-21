@@ -65,6 +65,8 @@ public class MyTest {
                 }
             }).start();
 
+
+
             new Thread(()->{
                 try {
                     InputStream is = p.getErrorStream();

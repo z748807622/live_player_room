@@ -14,6 +14,15 @@ public class UserInfo {
     private String nick;    // 昵称
     private String addr;    // 地址
     private Channel channel;// 通道
+    private boolean isAdmin = false;
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
 
     public boolean isAuth() {
         return isAuth;

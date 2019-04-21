@@ -7,6 +7,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.DefaultEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,10 @@ public class WebsocketChatServer implements IServer {
         executorService.scheduleAtFixedRate(()->{
             UserInfoManager.broadCastPing();
         },3,40,TimeUnit.SECONDS);
+
+        /*executorService.scheduleAtFixedRate(()->{
+            UserInfoManager.sendLiveCmdInfo("lalalallala");
+        },3,3,TimeUnit.SECONDS);*/
 
         try {
             serverBootstrap.bind(port).sync().channel().closeFuture().sync();

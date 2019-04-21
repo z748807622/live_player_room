@@ -6,6 +6,7 @@ import com.zjy.entity.UserInfo;
 import com.zjy.proto.ChatCode;
 import com.zjy.redisUtil.RedisShardedPoolUtil;
 import com.zjy.util.Constants;
+import com.zjy.util.FFMPEG;
 import com.zjy.util.NettyUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -150,6 +151,34 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
                 return;
             case ChatCode.MESS_CODE: //普通的消息留给MessageHandler处理
                 break;
+            case ChatCode.SYS_ONLINE_MESSAGE://开启直播命令
+                UserInfo userInfo = UserInfoManager.getUserInfo(channel);
+                if (!userInfo.isAdmin()){
+                    Map<String,String> res = new HashMap<>();
+                    res.put("code",String.valueOf(ChatCode.SYS_OTHER_INFO));
+                    res.put("mess","你没有权限开启直播");
+                    channel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(res)));
+                    return;
+                }
+                if (json.get("type") !=null && StringUtils.equals(json.get("type").toString(),"0")){
+                    UserInfoManager.sendLiveCmdInfo("开始关闭直播");
+                    if (FFMPEG.TOOLS.getTools().close()){
+                        UserInfoManager.sendLiveCmdInfo("关闭成功");
+                    }else {
+                        UserInfoManager.sendLiveCmdInfo("关闭失败");
+                    }
+                }else if (json.get("type") !=null && StringUtils.equals(json.get("type").toString(),"1")){
+                    if (json.get("videoPath") != null){
+                        UserInfoManager.sendLiveCmdInfo("开始开启直播");
+                        new Thread(()->{
+                            FFMPEG.TOOLS.getTools()
+                                    .startPlay(json.get("videoPath")
+                                            .toString(),
+                                            false);
+                        }).start();
+                    }
+                }
+                return;
             default:
                 logger.warn("The code [{}] can't be auth!!!", code);
                 return;

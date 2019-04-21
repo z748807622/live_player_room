@@ -18,4 +18,6 @@ public class ChatCode {
     public static final int SYS_AUTH_STATE = 20002; // 认证结果
     public static final int SYS_OTHER_INFO = 20003; // 系统消息
 
+    public static final int SYS_ONLINE_MESSAGE = 9999; //直播控制台信息
+
 }

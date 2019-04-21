@@ -44,6 +44,12 @@
             <version>1.2.54</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.zjy</groupId>
+            <artifactId>FFMPGETool</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
 </project>

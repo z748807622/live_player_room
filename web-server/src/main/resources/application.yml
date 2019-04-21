@@ -49,6 +49,7 @@ spring:
       force: true
       enabled: true
 
+
   freemarker:
     template-loader-path: classpath:/templates
     cache: false
@@ -59,5 +60,13 @@ spring:
     expose-session-attributes: true
     request-context-attribute: request
     suffix: .ftl
+
+  servlet:
+    multipart:
+      max-file-size: 2048MB
+      max-request-size: 2048MB
+
+upload:
+  filePath: D:\test
 
 

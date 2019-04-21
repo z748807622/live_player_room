@@ -1,14 +1,18 @@
 package com.zjy.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import com.zjy.entity.UserInfo;
 import com.zjy.proto.*;
 import com.zjy.util.NettyUtil;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -20,9 +24,10 @@ public class UserInfoManager {
     private static final Logger logger = LoggerFactory.getLogger(UserInfoManager.class);
 
     private static ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock(true);
-
     private static ConcurrentMap<Channel, UserInfo> userInfos = new ConcurrentHashMap<>();
     private static AtomicInteger userCount = new AtomicInteger(0);
+    private static Channel adminChannel = null;
+    private final static Object adminChannelLock = new Object();
 
     public static void addChannel(Channel channel) {
         String remoteAddr = NettyUtil.parseChannelRemoteAddr(channel);
@@ -50,6 +55,12 @@ public class UserInfoManager {
         userInfo.setNick(nick);
         userInfo.setAuth(true);
         userInfo.setUserId();
+        userInfo.setAdmin(StringUtils.equals("管理员",nick));//判断是否为管理员
+        if (StringUtils.equals("管理员",nick)){
+            synchronized (adminChannelLock){
+                adminChannel = channel;
+            }
+        }
         userInfo.setTime(System.currentTimeMillis());
         return true;
     }
@@ -113,6 +124,19 @@ public class UserInfoManager {
             }
         } finally {
             rwLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * 发送直播cmd信息
+     * @param mes
+     */
+    public static void sendLiveCmdInfo(String mes){
+        if (adminChannel != null && adminChannel.isActive()){
+            Map<String,String> res = new HashMap<>();
+            res.put("code","9999");
+            res.put("mess",mes);
+            adminChannel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(res)));
         }
     }
 

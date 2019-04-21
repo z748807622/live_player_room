@@ -1,5 +1,7 @@
 package com.zjy.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 
