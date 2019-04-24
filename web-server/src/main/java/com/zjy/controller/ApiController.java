@@ -51,4 +51,6 @@ public class ApiController extends BaseController {
         return AjaxResult.success("查询成功").put("data",this.service.getVideoFileMapper().selectAll());
     }
 
+    public AjaxResult
+
 }

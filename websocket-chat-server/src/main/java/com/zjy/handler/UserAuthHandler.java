@@ -149,15 +149,29 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
                     UserInfoManager.broadCastInfo(ChatCode.SYS_USER_COUNT,UserInfoManager.getAuthUserCount());
                 }
                 return;
+            case ChatCode.SYS_ONLINE_CHAT_MANAGE:
+                Map<String,String> res = new HashMap<>();
+                res.put("code",String.valueOf(ChatCode.SYS_ONLINE_CHAT_MANAGE));
+                if (json.get("nickName") != null && json.get("type") !=null && StringUtils.equals(json.get("type").toString(),"0")){ //禁言
+                    UserInfoManager.bannedByNickName(json.getString("nickName"), false);
+                    res.put("mess","解禁成功");
+                }else if (json.get("nickName") != null && json.get("type") !=null && StringUtils.equals(json.get("type").toString(),"1")){
+                    UserInfoManager.bannedByNickName(json.getString("nickName"), true);
+                    res.put("mess","禁言成功");
+                }else {
+                    res.put("mess","指令错误");
+                }
+                channel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(res)));
+                return;
             case ChatCode.MESS_CODE: //普通的消息留给MessageHandler处理
                 break;
             case ChatCode.SYS_ONLINE_MESSAGE://开启直播命令
                 UserInfo userInfo = UserInfoManager.getUserInfo(channel);
                 if (!userInfo.isAdmin()){
-                    Map<String,String> res = new HashMap<>();
-                    res.put("code",String.valueOf(ChatCode.SYS_OTHER_INFO));
-                    res.put("mess","你没有权限开启直播");
-                    channel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(res)));
+                    Map<String,String> res1 = new HashMap<>();
+                    res1.put("code",String.valueOf(ChatCode.SYS_OTHER_INFO));
+                    res1.put("mess","你没有权限开启直播");
+                    channel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(res1)));
                     return;
                 }
                 if (json.get("type") !=null && StringUtils.equals(json.get("type").toString(),"0")){

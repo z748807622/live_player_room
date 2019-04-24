@@ -20,4 +20,6 @@ public class ChatCode {
 
     public static final int SYS_ONLINE_MESSAGE = 9999; //直播控制台信息
 
+    public static final int SYS_ONLINE_CHAT_MANAGE = 8888; //发言管理
+
 }

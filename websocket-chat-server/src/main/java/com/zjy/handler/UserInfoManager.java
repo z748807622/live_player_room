@@ -156,6 +156,30 @@ public class UserInfoManager {
     }
 
     /**
+     *
+     * @param nickName nickName
+     * @param isFlag false禁言  true解禁
+     */
+    public static void bannedByNickName(String nickName, boolean isFlag){
+        try{
+         rwLock.readLock().lock();
+         Set<Channel> keSet = userInfos.keySet();
+         for (Channel ch : keSet){
+             UserInfo userInfo = userInfos.get(ch);
+             if (userInfo != null && userInfo.getNick() != null && userInfo.getNick().equals(nickName)){
+                 if (isFlag){
+                     userInfo.setAllow(false);
+                 }else {
+                     userInfo.setAllow(true);
+                 }
+             }
+         }
+        }finally {
+            rwLock.readLock().unlock();
+        }
+    }
+
+    /**
      * 发送系统消息
      *
      * @param code
